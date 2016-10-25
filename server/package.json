@@ -1,0 +1,14 @@
+{
+  "name": "fttf-email-server",
+  "version": "0.0.1",
+  "description": "Fastboot server to handle fttf-email and dispatching",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Chad Carbert",
+  "dependencies": {
+    "fastboot-app-server": "^1.0.0-rc.5"
+  }
+}
