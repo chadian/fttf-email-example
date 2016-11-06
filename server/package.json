@@ -9,6 +9,7 @@
   },
   "author": "Chad Carbert",
   "dependencies": {
+    "express-interceptor": "^1.2.0",
     "fastboot-app-server": "^1.0.0-rc.5"
   }
 }
