@@ -1,7 +1,11 @@
 'use strict';
 
+const config = require('./config');
 const FastBootAppServer = require('fastboot-app-server');
-const inlinerMiddleware = require('./lib/inliner-middleware');
+const interceptorMiddleware = require('./lib/interceptor-middleware')({
+  mailgunApiKey: config.mailgunApiKey,
+  mailgunDomain: config.mailgunDomain
+});
 
 const EMBER_ROOT_PATH = '..';
 
@@ -12,7 +16,7 @@ const server = new FastBootAppServer({
   gzip: false,
 
   beforeMiddleware: function(app) {
-    app.use(inlinerMiddleware);
+    app.use(interceptorMiddleware);
   }
 });
 

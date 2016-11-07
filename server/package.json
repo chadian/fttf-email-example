@@ -9,7 +9,9 @@
   },
   "author": "Chad Carbert",
   "dependencies": {
+    "cheerio": "^0.22.0",
     "express-interceptor": "^1.2.0",
-    "fastboot-app-server": "^1.0.0-rc.5"
+    "fastboot-app-server": "^1.0.0-rc.5",
+    "mailgun-js": "^0.7.13"
   }
 }

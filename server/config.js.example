@@ -1,0 +1,4 @@
+module.exports = {
+  mailgunApiKey: process.env.MAILGUN_API_KEY || 'key-',
+  mailgunDomain: process.env.MAILGUN_DOMAIN  || ''
+};
