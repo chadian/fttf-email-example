@@ -10,7 +10,6 @@ const CSS_PATH = '../dist/assets/';
 const vendorCss = fs.readFileSync(CSS_PATH + 'vendor.css');
 const emailCss = fs.readFileSync(CSS_PATH + 'fttf-email.css');
 
-
 module.exports = function middleware({ mailgunApiKey, mailgunDomain }) {
   return interceptor(function(req, res) {
     const isRenderRoute = req.originalUrl.endsWith('/render');
@@ -28,7 +27,11 @@ module.exports = function middleware({ mailgunApiKey, mailgunDomain }) {
           .then(cleanScripts);
 
         if (isDispatchRoute) {
-          emailPrepQueue.then(cleaned => dispatchEmail(mailgunApiKey, mailgunDomain, cleaned));
+          emailPrepQueue.then(cleaned => dispatchEmail({
+            mailgunApiKey,
+            mailgunDomain,
+            body: cleaned
+          }));
         }
 
         emailPrepQueue
@@ -52,8 +55,7 @@ function cleanScripts(body) {
   return Promise.resolve($.html());
 }
 
-function dispatchEmail(apiKey, domain, body) {
-  console.log(apiKey, domain);
+function dispatchEmail({ apiKey, domain, body }) {
   const dispatcher = mailgun({ apiKey, domain });
 
   const $ = cheerio.load(body);
@@ -70,7 +72,7 @@ function dispatchEmail(apiKey, domain, body) {
       if (err) {
         reject(err);
       } else {
-        console.log('messages sent');
+        console.info('## Message sent', data);
         resolve(body);
       }
     });
