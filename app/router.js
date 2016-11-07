@@ -7,7 +7,8 @@ const Router = Ember.Router.extend({
 
 Router.map(function() {
   this.route('welcome-email', function() {
-	this.route('render');
+    this.route('render');
+    this.route('dispatch');
   });
 });
 
