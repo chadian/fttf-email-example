@@ -24,19 +24,20 @@ module.exports = function middleware({ mailgunApiKey, mailgunDomain }) {
       },
       intercept: function(body, send) {
         const emailPrepQueue = inlineStyles(body)
-          .then(cleanScripts);
-
-        if (isDispatchRoute) {
-          emailPrepQueue.then(cleaned => dispatchEmail({
-            mailgunApiKey,
-            mailgunDomain,
-            body: cleaned
-          }));
-        }
-
-        emailPrepQueue
+          .then(cleanScripts)
+          .then(function(cleaned) {
+            if (isDispatchRoute) {
+              return dispatchEmail({
+                mailgunApiKey,
+                mailgunDomain,
+                body: cleaned
+              });
+            } else {
+              return cleaned;
+            }
+          })
           .then(send)
-          .catch(send);
+          .catch( error => send(error.toString()) );
       }
     };
   });
@@ -55,26 +56,31 @@ function cleanScripts(body) {
   return Promise.resolve($.html());
 }
 
-function dispatchEmail({ apiKey, domain, body }) {
-  const dispatcher = mailgun({ apiKey, domain });
+function dispatchEmail({ mailgunApiKey, mailgunDomain, body }) {
+  return Promise.resolve()
+    .then(() => {
+      const $ = cheerio.load(body);
+      const data = {
+        from: 'chadcarbert@me.com',
+        to: 'chadcarbert@me.com',
+        subject: 'Hello',
+        text: $.text(),
+        html: $.html()
+      };
 
-  const $ = cheerio.load(body);
-  const data = {
-    from: 'chadcarbert@me.com',
-    to: 'chadcarbert@me.com',
-    subject: 'Hello',
-    text: $.text(),
-    html: $.html()
-  };
-
-  return new Promise(function(resolve, reject) {
-    dispatcher.messages().send(data, function(err, response) {
-      if (err) {
-        reject(err);
-      } else {
-        console.info('## Message sent', data);
-        resolve(body);
-      }
+      return data;
+    })
+    .then(data => {
+      const dispatcher = mailgun({ apiKey: mailgunApiKey, domain: mailgunDomain });
+      return new Promise(function(resolve, reject) {
+        dispatcher.messages().send(data, function(err) {
+          if (err) {
+            reject(err);
+          } else {
+            console.info('## Message sent', data);
+            resolve(body);
+          }
+        });
+     });
     });
-  });
 }
