@@ -10,10 +10,10 @@ const CSS_PATH = '../dist/assets/';
 const vendorCss = fs.readFileSync(CSS_PATH + 'vendor.css');
 const emailCss = fs.readFileSync(CSS_PATH + 'fttf-email.css');
 
-module.exports = function middleware({ mailgunApiKey, mailgunDomain }) {
+module.exports = function middleware({ mailgunApiKey, mailgunDomain, fromEmail }) {
   return interceptor(function(req, res) {
-    const isRenderRoute = req.originalUrl.endsWith('/render');
-    const isDispatchRoute = req.originalUrl.endsWith('/dispatch');
+    const isRenderRoute = req.originalUrl.indexOf('/render') !== -1;
+    const isDispatchRoute = req.originalUrl.indexOf('/dispatch') !== -1;
 
     return {
       isInterceptable: function() {
@@ -30,6 +30,8 @@ module.exports = function middleware({ mailgunApiKey, mailgunDomain }) {
               return dispatchEmail({
                 mailgunApiKey,
                 mailgunDomain,
+                fromEmail,
+                toEmail: res.get('to-email'),
                 body: cleaned
               });
             } else {
@@ -56,13 +58,13 @@ function cleanScripts(body) {
   return Promise.resolve($.html());
 }
 
-function dispatchEmail({ mailgunApiKey, mailgunDomain, body }) {
+function dispatchEmail({ mailgunApiKey, mailgunDomain, fromEmail, toEmail, body }) {
   return Promise.resolve()
     .then(() => {
       const $ = cheerio.load(body);
       const data = {
-        from: 'chadcarbert@me.com',
-        to: 'chadcarbert@me.com',
+        from: fromEmail,
+        to: toEmail,
         subject: 'Hello',
         text: $.text(),
         html: $.html()

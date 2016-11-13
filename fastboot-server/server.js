@@ -4,7 +4,8 @@ const config = require('./config');
 const FastBootAppServer = require('fastboot-app-server');
 const interceptorMiddleware = require('./lib/interceptor-middleware')({
   mailgunApiKey: config.mailgunApiKey,
-  mailgunDomain: config.mailgunDomain
+  mailgunDomain: config.mailgunDomain,
+  fromEmail:     config.fromEmail
 });
 
 const EMBER_ROOT_PATH = '..';
